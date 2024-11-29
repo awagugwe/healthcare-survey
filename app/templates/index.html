@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Healthcare Spending Survey</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h3 class="mb-0">Healthcare Spending Survey</h3>
+                    </div>
+                    <div class="card-body">
+                        <form id="surveyForm" onsubmit="submitForm(event)">
+                            <!-- Personal Information -->
+                            <div class="mb-3">
+                                <label for="age" class="form-label">Age</label>
+                                <input type="number" class="form-control" id="age" name="age" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="gender" class="form-label">Gender</label>
+                                <select class="form-select" id="gender" name="gender" required>
+                                    <option value="">Select gender</option>
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="income" class="form-label">Total Monthly Income ($)</label>
+                                <input type="number" class="form-control" id="income" name="income" required>
+                            </div>
+                            
+                            <!-- Expense Categories -->
+                            <h4 class="mt-4">Monthly Expenses</h4>
+                            
+                            <div class="expense-category mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="utilities_check">
+                                    <label class="form-check-label" for="utilities_check">Utilities</label>
+                                </div>
+                                <input type="number" class="form-control mt-2" name="utilities" placeholder="Amount ($)">
+                            </div>
+                            
+                            <div class="expense-category mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="entertainment_check">
+                                    <label class="form-check-label" for="entertainment_check">Entertainment</label>
+                                </div>
+                                <input type="number" class="form-control mt-2" name="entertainment" placeholder="Amount ($)">
+                            </div>
+                            
+                            <div class="expense-category mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="school_fees_check">
+                                    <label class="form-check-label" for="school_fees_check">School Fees</label>
+                                </div>
+                                <input type="number" class="form-control mt-2" name="school_fees" placeholder="Amount ($)">
+                            </div>
+                            
+                            <div class="expense-category mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="shopping_check">
+                                    <label class="form-check-label" for="shopping_check">Shopping</label>
+                                </div>
+                                <input type="number" class="form-control mt-2" name="shopping" placeholder="Amount ($)">
+                            </div>
+                            
+                            <div class="expense-category mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="healthcare_check">
+                                    <label class="form-check-label" for="healthcare_check">Healthcare</label>
+                                </div>
+                                <input type="number" class="form-control mt-2" name="healthcare" placeholder="Amount ($)">
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary">Submit Survey</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function submitForm(event) {
+            event.preventDefault();
+            const form = document.getElementById('surveyForm');
+            const formData = new FormData(form);
+            
+            fetch('/submit', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('Survey submitted successfully!');
+                    form.reset();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                alert('Error submitting form: ' + error);
+            });
+        }
+        
+        // Enable/disable amount inputs based on checkboxes
+        document.querySelectorAll('.form-check-input').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const amountInput = this.closest('.expense-category').querySelector('input[type="number"]');
+                amountInput.disabled = !this.checked;
+                if (!this.checked) amountInput.value = '';
+            });
+        });
+    </script>
+</body>
+</html>
